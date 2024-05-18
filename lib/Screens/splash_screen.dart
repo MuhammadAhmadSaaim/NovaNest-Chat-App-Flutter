@@ -28,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
     });
     Future.delayed(const Duration(milliseconds: 3500),(){
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-      SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(systemNavigationBarColor: Colors.white));
+      SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(systemNavigationBarColor: Colors.white, statusBarColor: Colors.white));
       if(APIS.auth.currentUser!=null){
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=>const HomeScreen()));
       }
