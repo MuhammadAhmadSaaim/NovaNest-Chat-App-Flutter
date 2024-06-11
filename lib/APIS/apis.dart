@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:novanest/models/message.dart';
 
 import '../models/chat_user.dart';
 
@@ -89,5 +90,32 @@ class APIS {
         .collection("users")
         .doc(auth.currentUser!.uid)
         .update({'image': me.image});
+  }
+
+  static String getConversationID(String id) => user.uid.hashCode <= id.hashCode
+      ? "${user.uid}_$id"
+      : "${id}_${user.uid}";
+
+  //Get messages on the platform except the one currently signed in
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getAllMessages(
+      ChatUser user) {
+    return firestore
+        .collection('chat/${getConversationID(user.id)}/messages/')
+        .snapshots();
+  }
+
+  static Future<void> sendMessage(ChatUser chatUser, String msg) async {
+    final time = DateTime.now().millisecondsSinceEpoch.toString();
+    final Message message = Message(
+        toId: chatUser.id,
+        read: "",
+        type: Type.text,
+        message: msg,
+        fromId: user.uid,
+        sent: time);
+
+    final ref = firestore
+        .collection('chat/${getConversationID(chatUser.id)}/messages/');
+    ref.doc(time).set(message.toJson());
   }
 }

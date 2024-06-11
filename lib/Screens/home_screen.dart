@@ -117,7 +117,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         });
                   } else {
                     return const Center(
-                      child: Text("No Messeges Found!"),
+                      child: Text("No Messages Found!"),
                     );
                   }
               }
