@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:novanest/Screens/view_profile_screen.dart';
 import 'package:novanest/helper/date_util.dart';
 import 'package:novanest/models/chat_user.dart';
 import '../APIS/apis.dart';
@@ -143,7 +144,9 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _appBar() {
     return InkWell(
-        onTap: () {},
+        onTap: () {
+          Navigator.push(context, MaterialPageRoute(builder: (_)=> ViewProfileScreen(user: widget.user)));
+        },
         child: StreamBuilder(
           stream:APIS.getUserInfo(widget.user),
           builder: (context, snapshot) {

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -42,10 +43,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
               backgroundColor: Colors.teal,
               onPressed: () async {
                 Dialogs.showProgressBar(context);
+
+                await APIS.updateActiveStatus(false);
+
                 await APIS.auth.signOut().then((value) async {
                   await GoogleSignIn().signOut().then((value) {
                     Navigator.pop(context);
                     Navigator.pop(context);
+                    APIS.auth=FirebaseAuth.instance;
+
                     Navigator.pushReplacement(context,
                         MaterialPageRoute(builder: (_) => const LoginScreen()));
                   });

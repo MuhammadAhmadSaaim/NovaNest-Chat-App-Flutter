@@ -24,8 +24,14 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     APIS.updateActiveStatus(true);
     SystemChannels.lifecycle.setMessageHandler((message) {
-      if(message.toString().contains("resume"))APIS.updateActiveStatus(true);
-      if(message.toString().contains("pause"))APIS.updateActiveStatus(false);
+      if (APIS.auth.currentUser != null) {
+        if (message.toString().contains("resume")) {
+          APIS.updateActiveStatus(true);
+        }
+        if (message.toString().contains("pause")) {
+          APIS.updateActiveStatus(false);
+        }
+      }
 
       return Future.value(message);
     });
@@ -36,38 +42,42 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap:() => FocusScope.of(context).unfocus(),
+      onTap: () => FocusScope.of(context).unfocus(),
       child: WillPopScope(
         onWillPop: () {
-          if(isSearching){
+          if (isSearching) {
             setState(() {
-              isSearching =!isSearching ;
+              isSearching = !isSearching;
             });
             return Future.value(false);
-          }else{
+          } else {
             return Future.value(true);
           }
         },
         child: Scaffold(
           appBar: AppBar(
-            title: isSearching ? TextField(
-              onChanged: (val){
-                searchList.clear();
-                for(var i in list){
-                  if(i.name.toLowerCase().contains(val.toLowerCase()) || i.email.toLowerCase().contains(val.toLowerCase())){
-                    searchList.add(i);
-                  }
-                  setState(() {
-                    searchList;
-                  });
-                }
-              },
-              autofocus: true,
-              style: TextStyle(fontSize: 17,letterSpacing: 0.9),
-              decoration: InputDecoration(
-                border: InputBorder.none, hintText: "Name | Email",
-              ),
-            ) : const Text("NovaNest"),
+            title: isSearching
+                ? TextField(
+                    onChanged: (val) {
+                      searchList.clear();
+                      for (var i in list) {
+                        if (i.name.toLowerCase().contains(val.toLowerCase()) ||
+                            i.email.toLowerCase().contains(val.toLowerCase())) {
+                          searchList.add(i);
+                        }
+                        setState(() {
+                          searchList;
+                        });
+                      }
+                    },
+                    autofocus: true,
+                    style: TextStyle(fontSize: 17, letterSpacing: 0.9),
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      hintText: "Name | Email",
+                    ),
+                  )
+                : const Text("NovaNest"),
             //leading: const Icon(CupertinoIcons.home),
             actions: [
               IconButton(
@@ -113,15 +123,20 @@ class _HomeScreenState extends State<HomeScreen> {
                 case ConnectionState.done:
                   final data = snapshot.data?.docs;
                   list =
-                      data?.map((e) => ChatUser.fromJson(e.data())).toList() ?? [];
+                      data?.map((e) => ChatUser.fromJson(e.data())).toList() ??
+                          [];
 
                   if (list.isNotEmpty) {
                     return ListView.builder(
-                        itemCount: isSearching? searchList.length : list.length,
+                        itemCount:
+                            isSearching ? searchList.length : list.length,
                         padding: EdgeInsets.only(top: mq.height * .01),
                         physics: const BouncingScrollPhysics(),
                         itemBuilder: (context, index) {
-                          return ChatUserCard(user: isSearching ? searchList[index] : list[index]);
+                          return ChatUserCard(
+                              user: isSearching
+                                  ? searchList[index]
+                                  : list[index]);
                         });
                   } else {
                     return const Center(
