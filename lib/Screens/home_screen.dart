@@ -33,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
         onWillPop: () {
           if(isSearching){
             setState(() {
-              isSearching = false;
+              isSearching =!isSearching ;
             });
             return Future.value(false);
           }else{
