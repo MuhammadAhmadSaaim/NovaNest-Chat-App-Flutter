@@ -79,6 +79,21 @@ class APIS {
         .update({'name': me.name, 'about': me.about});
   }
 
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getUserInfo(
+      ChatUser chatUser) {
+    return firestore
+        .collection('users')
+        .where('id', isEqualTo: chatUser.id)
+        .snapshots();
+  }
+
+  static Future<void> updateActiveStatus(bool isOnline) async {
+    firestore.collection('users').doc(user.uid).update({
+      "is_online": isOnline,
+      "last_active": DateTime.now().millisecondsSinceEpoch.toString()
+    });
+  }
+
   static Future<void> updateProfilePicture(File file) async {
     final ext = file.path.split('.').last;
     final ref = storage.ref().child('ProfilePictures/${user.uid}.$ext');
@@ -101,15 +116,17 @@ class APIS {
       ChatUser user) {
     return firestore
         .collection('chat/${getConversationID(user.id)}/messages/')
+        .orderBy("sent", descending: true)
         .snapshots();
   }
 
-  static Future<void> sendMessage(ChatUser chatUser, String msg) async {
+  static Future<void> sendMessage(
+      ChatUser chatUser, String msg, Type type) async {
     final time = DateTime.now().millisecondsSinceEpoch.toString();
     final Message message = Message(
         toId: chatUser.id,
         read: "",
-        type: Type.text,
+        type: type,
         message: msg,
         fromId: user.uid,
         sent: time);
@@ -133,5 +150,16 @@ class APIS {
         .orderBy('sent', descending: true)
         .limit(1)
         .snapshots();
+  }
+
+  static Future<void> sendChatImage(ChatUser chatUser, File file) async {
+    final ext = file.path.split('.').last;
+    final ref = storage.ref().child(
+        'images/${getConversationID(chatUser.id)}/${DateTime.now().millisecondsSinceEpoch}.$ext');
+    await ref
+        .putFile(file, SettableMetadata(contentType: 'image/$ext'))
+        .then((p0) {});
+    final imageUrl = await ref.getDownloadURL();
+    await sendMessage(chatUser, imageUrl, Type.image);
   }
 }

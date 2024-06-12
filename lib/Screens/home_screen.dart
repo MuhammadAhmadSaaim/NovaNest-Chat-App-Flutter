@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:novanest/Screens/profile_screen.dart';
 import 'package:novanest/Widgets/user_chat_card.dart';
@@ -21,6 +22,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
+    APIS.updateActiveStatus(true);
+    SystemChannels.lifecycle.setMessageHandler((message) {
+      if(message.toString().contains("resume"))APIS.updateActiveStatus(true);
+      if(message.toString().contains("pause"))APIS.updateActiveStatus(false);
+
+      return Future.value(message);
+    });
     APIS.getCurrentUserInfo();
     super.initState();
   }
