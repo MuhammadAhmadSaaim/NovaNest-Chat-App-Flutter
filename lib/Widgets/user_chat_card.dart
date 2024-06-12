@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:novanest/Widgets/Alertd%20Dialogs/profile_dialog.dart';
 import 'package:novanest/models/message.dart';
 
 import '../APIS/apis.dart';
@@ -49,15 +50,20 @@ class _ChatUserCardState extends State<ChatUserCard> {
             }
 
             return ListTile(
-                leading: ClipRRect(
-                  borderRadius: BorderRadius.circular(mq.height * .3),
-                  child: CachedNetworkImage(
-                    width: mq.height * .055,
-                    height: mq.height * .055,
-                    imageUrl: widget.user.image,
-                    //placeholder: (context, url) => CircularProgressIndicator(),
-                    errorWidget: (context, url, error) =>
-                        const CircleAvatar(child: Icon(CupertinoIcons.person)),
+                leading: InkWell(
+                  onTap: (){
+                    showDialog(context: context, builder: (_) => ProfileDialog(user: widget.user));
+                  },
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(mq.height * .3),
+                    child: CachedNetworkImage(
+                      width: mq.height * .055,
+                      height: mq.height * .055,
+                      imageUrl: widget.user.image,
+                      //placeholder: (context, url) => CircularProgressIndicator(),
+                      errorWidget: (context, url, error) =>
+                          const CircleAvatar(child: Icon(CupertinoIcons.person)),
+                    ),
                   ),
                 ),
                 title: Text(
